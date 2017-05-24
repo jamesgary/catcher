@@ -3,6 +3,7 @@ module Main exposing (main)
 import AnimationFrame
 import Common exposing (..)
 import Html
+import Random
 import Time
 import View exposing (view)
 
@@ -23,6 +24,8 @@ init =
             , { pos = ( 300, 200 ) }
             ]
       , arena = ( 800, 450 )
+      , timeSinceLastDrop = 0
+      , randomSeed = Random.initialSeed 42
       }
     , Cmd.none
     )
@@ -32,19 +35,55 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         AnimFrame time ->
-            ( updateAnimFrame model time, Cmd.none )
+            ( updateAnimFrame time model, Cmd.none )
 
 
-updateAnimFrame : Model -> Time.Time -> Model
-updateAnimFrame model time =
+updateAnimFrame : Time.Time -> Model -> Model
+updateAnimFrame time model =
+    model
+        |> updateTsld time
+        |> addDroplets time
+        |> animDroplets time
+
+
+updateTsld : Time.Time -> Model -> Model
+updateTsld time model =
+    { model | timeSinceLastDrop = model.timeSinceLastDrop + time }
+
+
+addDroplets : Time.Time -> Model -> Model
+addDroplets time model =
+    if model.timeSinceLastDrop > config.dropCooldown then
+        let
+            ( droplet, newSeed ) =
+                newDroplet model.randomSeed
+        in
+        { model
+            | droplets = droplet :: model.droplets
+            , timeSinceLastDrop = 0
+            , randomSeed = newSeed
+        }
+    else
+        model
+
+
+newDroplet : Random.Seed -> ( Droplet, Random.Seed )
+newDroplet seed =
+    let
+        ( x, nextSeed ) =
+            Random.step (Random.float 0 800) seed
+    in
+    ( { pos = ( x, -10 )
+      }
+    , nextSeed
+    )
+
+
+animDroplets : Time.Time -> Model -> Model
+animDroplets time model =
     { model
-        | droplets = animDroplets time model.droplets
+        | droplets = List.map (animDroplet time) model.droplets
     }
-
-
-animDroplets : Time.Time -> List Droplet -> List Droplet
-animDroplets time droplets =
-    List.map (animDroplet time) droplets
 
 
 animDroplet : Time.Time -> Droplet -> Droplet
