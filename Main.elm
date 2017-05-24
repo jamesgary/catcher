@@ -69,7 +69,42 @@ updateAnimFrame time model =
         |> updateTsld time
         |> addDroplets time
         |> clearDroplets
+        |> catchDroplets
+        -- TODO time
         |> animDroplets time
+
+
+catchDroplets : Model -> Model
+catchDroplets model =
+    { model
+        | droplets = List.filter (isntTouchingCatcher model.catcher) model.droplets
+    }
+
+
+isntTouchingCatcher : Catcher -> Droplet -> Bool
+isntTouchingCatcher catcher droplet =
+    let
+        yBuffer =
+            10
+
+        ( cx, cy ) =
+            catcher.pos
+
+        ( cx1, cx2 ) =
+            ( cx, cx + config.catcherWidth )
+
+        ( cy1, cy2 ) =
+            ( cy - yBuffer, cy + yBuffer )
+
+        ( dx, dy ) =
+            droplet.pos
+    in
+    not
+        ((cx1 <= dx)
+            && (dx <= cx2)
+            && (cy1 <= dy)
+            && (dy <= cy2)
+        )
 
 
 clearDroplets : Model -> Model
