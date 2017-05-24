@@ -1,0 +1,13 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #fcf;
+}
+
+.droplet {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  background: #44f;
+  border-radius: 100%;
+}
