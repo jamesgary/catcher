@@ -11,3 +11,12 @@ html, body {
   background: #44f;
   border-radius: 100%;
 }
+
+.arena {
+  border: 2px solid #303;
+  background: #fef;
+  margin: 20px auto;
+  position: relative;
+  overflow: hidden;
+}
+

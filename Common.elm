@@ -5,6 +5,7 @@ import Time
 
 type alias Model =
     { droplets : List Droplet
+    , arena : ( Float, Float )
     }
 
 

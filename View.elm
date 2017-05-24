@@ -8,7 +8,15 @@ import Html.Events exposing (..)
 
 view : Model -> Html Msg
 view model =
-    div [] [ viewDroplets model.droplets ]
+    let
+        ( width, height ) =
+            model.arena
+    in
+    div
+        [ class "arena"
+        , style [ ( "width", px width ), ( "height", px height ) ]
+        ]
+        [ viewDroplets model.droplets ]
 
 
 viewDroplets : List Droplet -> Html Msg
