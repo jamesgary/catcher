@@ -5,8 +5,8 @@ html, body {
 }
 
 .droplet {
-  width: 20px;
-  height: 20px;
+  width: 10px;
+  height: 10px;
   position: absolute;
   background: #44f;
   border-radius: 100%;
@@ -20,3 +20,8 @@ html, body {
   overflow: hidden;
 }
 
+.catcher {
+  height: 1px;
+  border-bottom: 1px solid black;
+  position: absolute;
+}

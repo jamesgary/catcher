@@ -1,5 +1,6 @@
 module Common exposing (..)
 
+import Mouse
 import Random
 import Time
 
@@ -9,6 +10,13 @@ type alias Model =
     , arena : ( Float, Float )
     , timeSinceLastDrop : Time.Time
     , randomSeed : Random.Seed
+    , catcher : Catcher
+    }
+
+
+type alias Catcher =
+    { pos : Pos
+    , width : Float
     }
 
 
@@ -23,9 +31,11 @@ type alias Pos =
 
 type Msg
     = AnimFrame Time.Time
+    | MouseMove Pos
 
 
 config =
     { speed = 0.05
     , dropCooldown = 100
+    , catcherWidth = 100
     }

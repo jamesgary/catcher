@@ -3,6 +3,7 @@ module Main exposing (main)
 import AnimationFrame
 import Common exposing (..)
 import Html
+import Mouse
 import Random
 import Time
 import View exposing (view)
@@ -23,6 +24,10 @@ init =
       , arena = ( 800, 450 )
       , timeSinceLastDrop = 0
       , randomSeed = Random.initialSeed 42
+      , catcher =
+            { width = config.catcherWidth
+            , pos = ( 400, 225 )
+            }
       }
     , Cmd.none
     )
@@ -33,6 +38,29 @@ update msg model =
     case msg of
         AnimFrame time ->
             ( updateAnimFrame time model, Cmd.none )
+
+        MouseMove mousePos ->
+            ( moveCatcher mousePos model, Cmd.none )
+
+
+moveCatcher : Pos -> Model -> Model
+moveCatcher mousePos model =
+    let
+        ( x, y ) =
+            mousePos
+
+        newPos =
+            ( x - (config.catcherWidth / 2), y )
+
+        catcher =
+            model.catcher
+
+        newCatcher =
+            { catcher | pos = newPos }
+    in
+    { model
+        | catcher = newCatcher
+    }
 
 
 updateAnimFrame : Time.Time -> Model -> Model
