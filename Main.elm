@@ -19,10 +19,7 @@ main =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { droplets =
-            [ { pos = ( 20, 50 ) }
-            , { pos = ( 300, 200 ) }
-            ]
+    ( { droplets = []
       , arena = ( 800, 450 )
       , timeSinceLastDrop = 0
       , randomSeed = Random.initialSeed 42
@@ -43,7 +40,28 @@ updateAnimFrame time model =
     model
         |> updateTsld time
         |> addDroplets time
+        |> clearDroplets
         |> animDroplets time
+
+
+clearDroplets : Model -> Model
+clearDroplets model =
+    let
+        ( width, height ) =
+            model.arena
+    in
+    { model
+        | droplets = List.filter (isVisibleDroplet height) model.droplets
+    }
+
+
+isVisibleDroplet : Float -> Droplet -> Bool
+isVisibleDroplet maxHeight droplet =
+    let
+        ( x, y ) =
+            droplet.pos
+    in
+    y <= maxHeight
 
 
 updateTsld : Time.Time -> Model -> Model
