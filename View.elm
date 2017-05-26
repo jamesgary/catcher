@@ -14,13 +14,21 @@ view model =
             model.arena
     in
     div
-        [ class "arena"
-        , onMouseMove
-        , style [ ( "width", px width ), ( "height", px height ) ]
+        [ class "gameContainer"
+        , style
+            [ ( "width", px width )
+            , ( "height", px height )
+            ]
         ]
         [ viewDroplets model.droplets
         , viewCatcher model.catcher
+        , viewGlass
         ]
+
+
+viewGlass : Html Msg
+viewGlass =
+    div [ class "glass", onMouseMove ] []
 
 
 viewCatcher : Catcher -> Html Msg
@@ -76,15 +84,3 @@ decodeMousePos =
     Decode.map2 (,)
         (Decode.at [ "offsetX" ] Decode.float)
         (Decode.at [ "offsetY" ] Decode.float)
-
-
-
---Decode.map2 (,)
---    (Decode.map2 (/)
---        (Decode.at [ "offsetX" ] Decode.float)
---        (Decode.at [ "target", "clientWidth" ] Decode.float)
---    )
---    (Decode.map2 (/)
---        (Decode.at [ "offsetY" ] Decode.float)
---        (Decode.at [ "target", "clientHeight" ] Decode.float)
---    )
