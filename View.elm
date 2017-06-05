@@ -5,6 +5,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as Decode
+import Svg exposing (polyline, svg)
+import Svg.Attributes exposing (fill, points, stroke)
 
 
 view : Model -> Html Msg
@@ -20,8 +22,10 @@ view model =
             , ( "height", px height )
             ]
         ]
-        [ viewDroplets model.droplets
-        , viewCatcher model.catcher
+        [ svg [ Svg.Attributes.class "svgContainer" ]
+            [ viewCatcher model.catcher
+            ]
+        , viewDroplets model.droplets
         , viewGlass
         ]
 
@@ -34,18 +38,35 @@ viewGlass =
 viewCatcher : Catcher -> Html Msg
 viewCatcher catcher =
     let
-        ( x, y ) =
+        pos =
             catcher.pos
+
+        lastPos =
+            catcher.lastPos
+
+        cw =
+            config.catcherWidth
+
+        pointsStr =
+            strFromPos (Pos pos.x pos.y)
+                ++ strFromPos (Pos (pos.x + config.catcherWidth) pos.y)
+                ++ strFromPos (Pos (lastPos.x + config.catcherWidth) lastPos.y)
+                ++ strFromPos (Pos lastPos.x lastPos.y)
+                ++ strFromPos (Pos pos.x pos.y)
     in
-    div
-        [ class "catcher"
-        , style
-            [ ( "width", px catcher.width )
-            , ( "top", px y )
-            , ( "left", px x )
+    svg []
+        [ polyline
+            [ fill "gray"
+            , stroke "black"
+            , points pointsStr
             ]
+            []
         ]
-        []
+
+
+strFromPos : Pos -> String
+strFromPos pos =
+    toString pos.x ++ "," ++ toString pos.y ++ " "
 
 
 viewDroplets : List Droplet -> Html Msg
@@ -56,14 +77,14 @@ viewDroplets droplets =
 viewDroplet : Droplet -> Html Msg
 viewDroplet droplet =
     let
-        ( x, y ) =
+        pos =
             droplet.pos
     in
     div
         [ class "droplet"
         , style
-            [ ( "top", px y )
-            , ( "left", px x )
+            [ ( "top", px pos.y )
+            , ( "left", px pos.x )
             ]
         ]
         []
@@ -79,8 +100,8 @@ onMouseMove =
     on "mousemove" (Decode.map MouseMove decodeMousePos)
 
 
-decodeMousePos : Decode.Decoder ( Float, Float )
+decodeMousePos : Decode.Decoder Pos
 decodeMousePos =
-    Decode.map2 (,)
+    Decode.map2 Pos
         (Decode.at [ "offsetX" ] Decode.float)
         (Decode.at [ "offsetY" ] Decode.float)

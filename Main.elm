@@ -26,7 +26,8 @@ init =
       , randomSeed = Random.initialSeed 42
       , catcher =
             { width = config.catcherWidth
-            , pos = ( 400, 225 )
+            , pos = Pos 400 225
+            , lastPos = Pos 400 225
             }
       }
     , Cmd.none
@@ -46,17 +47,17 @@ update msg model =
 moveCatcher : Pos -> Model -> Model
 moveCatcher mousePos model =
     let
-        ( x, y ) =
-            mousePos
-
         newPos =
-            ( x - (config.catcherWidth / 2), y )
+            Pos (mousePos.x - (config.catcherWidth / 2)) mousePos.y
 
         catcher =
             model.catcher
 
         newCatcher =
-            { catcher | pos = newPos }
+            { catcher
+                | pos = newPos
+                , lastPos = catcher.pos
+            }
     in
     { model
         | catcher = newCatcher
@@ -84,27 +85,82 @@ catchDroplets model =
 isntTouchingCatcher : Catcher -> Droplet -> Bool
 isntTouchingCatcher catcher droplet =
     let
-        yBuffer =
-            10
+        a =
+            Pos catcher.pos.x catcher.pos.y
 
-        ( cx, cy ) =
-            catcher.pos
+        b =
+            Pos (catcher.pos.x + config.catcherWidth) catcher.pos.y
 
-        ( cx1, cx2 ) =
-            ( cx, cx + config.catcherWidth )
+        c =
+            Pos catcher.lastPos.x catcher.lastPos.y
 
-        ( cy1, cy2 ) =
-            ( cy - yBuffer, cy + yBuffer )
-
-        ( dx, dy ) =
-            droplet.pos
+        d =
+            Pos catcher.lastPos.x (catcher.lastPos.y + config.catcherWidth)
     in
     not
-        ((cx1 <= dx)
-            && (dx <= cx2)
-            && (cy1 <= dy)
-            && (dy <= cy2)
+        (doesLineIntersectLines
+            ( droplet.pos, droplet.lastPos )
+            [ ( a, b )
+            , ( b, c )
+            , ( c, d )
+            , ( d, a )
+            ]
         )
+
+
+doesLineIntersectLines : Line -> List Line -> Bool
+doesLineIntersectLines line lines =
+    List.any (doLinesIntersect line) lines
+
+
+doLinesIntersect : Line -> Line -> Bool
+doLinesIntersect line1 line2 =
+    -- https://stackoverflow.com/a/24392281
+    let
+        ( line1A, line1B ) =
+            line1
+
+        ( line2A, line2B ) =
+            line2
+
+        a =
+            line1A.x
+
+        b =
+            line1A.y
+
+        c =
+            line1B.x
+
+        d =
+            line1B.y
+
+        p =
+            line2A.x
+
+        q =
+            line2A.y
+
+        r =
+            line2B.x
+
+        s =
+            line2B.y
+
+        det =
+            (c - a) * (s - q) - (r - p) * (d - b)
+    in
+    if det == 0 then
+        False
+    else
+        let
+            lambda =
+                ((s - q) * (r - a) + (p - r) * (s - b)) / det
+
+            gamma =
+                ((b - d) * (r - a) + (c - a) * (s - b)) / det
+        in
+        (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1)
 
 
 clearDroplets : Model -> Model
@@ -120,11 +176,7 @@ clearDroplets model =
 
 isVisibleDroplet : Float -> Droplet -> Bool
 isVisibleDroplet maxHeight droplet =
-    let
-        ( x, y ) =
-            droplet.pos
-    in
-    y <= maxHeight
+    droplet.pos.y <= maxHeight
 
 
 updateTsld : Time.Time -> Model -> Model
@@ -154,7 +206,8 @@ newDroplet seed =
         ( x, nextSeed ) =
             Random.step (Random.float 0 800) seed
     in
-    ( { pos = ( x, -10 )
+    ( { pos = Pos x -10
+      , lastPos = Pos x -11
       }
     , nextSeed
     )
@@ -170,16 +223,19 @@ animDroplets time model =
 animDroplet : Time.Time -> Droplet -> Droplet
 animDroplet time droplet =
     let
-        ( x, y ) =
+        pos =
             droplet.pos
 
         distance =
             time * config.speed
 
         newPos =
-            ( x, y + distance )
+            Pos pos.x (pos.y + distance)
     in
-    { droplet | pos = newPos }
+    { droplet
+        | pos = newPos
+        , lastPos = droplet.pos
+    }
 
 
 
