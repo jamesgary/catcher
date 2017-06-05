@@ -9,7 +9,7 @@ config =
     { dropletSpeed = 0.05
     , dropCooldown = 100
     , catcherWidth = 100
-    , catcherSpeed = 1
+    , catcherSpeed = 5
     }
 
 

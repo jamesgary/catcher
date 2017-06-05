@@ -111,12 +111,12 @@ updateAnimFrame time model =
 catchDroplets : Model -> Model
 catchDroplets model =
     { model
-        | droplets = List.filter (isntTouchingCatcher model.catcher) model.droplets
+        | droplets = List.filter (not << isTouchingCatcher model.catcher) model.droplets
     }
 
 
-isntTouchingCatcher : Catcher -> Droplet -> Bool
-isntTouchingCatcher catcher droplet =
+isTouchingCatcher : Catcher -> Droplet -> Bool
+isTouchingCatcher catcher droplet =
     let
         a =
             Pos catcher.pos.x catcher.pos.y
@@ -125,20 +125,20 @@ isntTouchingCatcher catcher droplet =
             Pos (catcher.pos.x + config.catcherWidth) catcher.pos.y
 
         c =
-            Pos catcher.lastPos.x catcher.lastPos.y
+            Pos (catcher.lastPos.x + config.catcherWidth) catcher.lastPos.y
 
         d =
-            Pos catcher.lastPos.x (catcher.lastPos.y + config.catcherWidth)
-    in
-    not
-        (doesLineIntersectLines
-            ( droplet.pos, droplet.lastPos )
+            Pos catcher.lastPos.x catcher.lastPos.y
+
+        catcherLines =
             [ ( a, b )
             , ( b, c )
             , ( c, d )
             , ( d, a )
             ]
-        )
+    in
+    doesLineIntersectLines ( droplet.pos, droplet.lastPos ) catcherLines
+        || (List.length (List.filter (doLinesIntersect ( droplet.pos, Pos -1000 -1000 )) catcherLines) % 2 == 1)
 
 
 doesLineIntersectLines : Line -> List Line -> Bool

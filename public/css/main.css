@@ -10,6 +10,7 @@ html, body {
   position: absolute;
   background: #44f;
   border-radius: 100%;
+  transform: translate(-5px, -5px);
 }
 
 .gameContainer {
