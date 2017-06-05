@@ -20,15 +20,20 @@ main =
 
 init : ( Model, Cmd Msg )
 init =
+    let
+        defaultPos =
+            Pos 400 225
+    in
     ( { droplets = []
       , arena = ( 800, 450 )
       , timeSinceLastDrop = 0
       , randomSeed = Random.initialSeed 42
       , catcher =
             { width = config.catcherWidth
-            , pos = Pos 400 225
-            , lastPos = Pos 400 225
+            , pos = defaultPos
+            , lastPos = defaultPos
             }
+      , mousePos = defaultPos
       }
     , Cmd.none
     )
@@ -41,14 +46,32 @@ update msg model =
             ( updateAnimFrame time model, Cmd.none )
 
         MouseMove mousePos ->
-            ( moveCatcher mousePos model, Cmd.none )
+            ( { model | mousePos = mousePos }, Cmd.none )
 
 
-moveCatcher : Pos -> Model -> Model
-moveCatcher mousePos model =
+moveCatcher : Time.Time -> Model -> Model
+moveCatcher time model =
     let
+        curPos =
+            model.catcher.pos
+
+        desiredPos =
+            Pos (model.mousePos.x - (config.catcherWidth / 2)) model.mousePos.y
+
+        travelDist =
+            distance curPos desiredPos
+
+        -- move a max speed of x/s
+        desiredRate =
+            travelDist / time
+
         newPos =
-            Pos (mousePos.x - (config.catcherWidth / 2)) mousePos.y
+            if desiredRate > config.catcherSpeed then
+                Pos
+                    (curPos.x - ((curPos.x - desiredPos.x) * (config.catcherSpeed / desiredRate)))
+                    (curPos.y - ((curPos.y - desiredPos.y) * (config.catcherSpeed / desiredRate)))
+            else
+                desiredPos
 
         catcher =
             model.catcher
@@ -64,14 +87,24 @@ moveCatcher mousePos model =
     }
 
 
+distance : Pos -> Pos -> Float
+distance a b =
+    sqrt (sq (a.x - b.x) + sq (a.y - b.y))
+
+
+sq : number -> number
+sq num =
+    num * num
+
+
 updateAnimFrame : Time.Time -> Model -> Model
 updateAnimFrame time model =
     model
         |> updateTsld time
         |> addDroplets time
         |> clearDroplets
+        |> moveCatcher time
         |> catchDroplets
-        -- TODO time
         |> animDroplets time
 
 
@@ -227,7 +260,7 @@ animDroplet time droplet =
             droplet.pos
 
         distance =
-            time * config.speed
+            time * config.dropletSpeed
 
         newPos =
             Pos pos.x (pos.y + distance)

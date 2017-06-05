@@ -6,9 +6,10 @@ import Time
 
 
 config =
-    { speed = 0.05
+    { dropletSpeed = 0.05
     , dropCooldown = 100
     , catcherWidth = 100
+    , catcherSpeed = 1
     }
 
 
@@ -18,6 +19,7 @@ type alias Model =
     , timeSinceLastDrop : Time.Time
     , randomSeed : Random.Seed
     , catcher : Catcher
+    , mousePos : Pos
     }
 
 
