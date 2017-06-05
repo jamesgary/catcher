@@ -32,7 +32,7 @@ view model =
 
 viewGlass : Html Msg
 viewGlass =
-    div [ class "glass", onMouseMove ] []
+    div [ class "glass", onMouseMove, onMouseOut ] []
 
 
 viewCatcher : Catcher -> Html Msg
@@ -98,6 +98,11 @@ px a =
 onMouseMove : Html.Attribute Msg
 onMouseMove =
     on "mousemove" (Decode.map MouseMove decodeMousePos)
+
+
+onMouseOut : Html.Attribute Msg
+onMouseOut =
+    on "mouseout" (Decode.map MouseMove decodeMousePos)
 
 
 decodeMousePos : Decode.Decoder Pos
