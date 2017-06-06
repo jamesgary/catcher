@@ -45,12 +45,7 @@ viewGlass =
 viewFilters : Html Msg
 viewFilters =
     defs []
-        [ --filter [ id "catcher-blur", Svg.Attributes.height "200%" ]
-          --  [ feGaussianBlur
-          --      [ stdDeviation "1" ]
-          --      []
-          --  ]
-          linearGradient [ id "catcher-blur-fill", x1 "0", x2 "0", y1 "0", y2 "1" ]
+        [ linearGradient [ id "catcher-blur-fill", x1 "0", x2 "0", y1 "0", y2 "1" ]
             [ stop [ Svg.Attributes.class "catcher-blur-stop-1", offset "0%" ] []
             , stop [ Svg.Attributes.class "catcher-blur-stop-2", offset "100%" ] []
             ]
@@ -95,8 +90,7 @@ viewCatcher catcher =
     in
     g []
         [ polygon
-            [ Svg.Attributes.class "catcher-blur"
-            , Svg.Attributes.fill "url(#catcher-blur-fill)"
+            [ Svg.Attributes.fill "url(#catcher-blur-fill)"
             , points pointsStr
             ]
             []
