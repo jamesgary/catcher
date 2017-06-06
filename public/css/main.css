@@ -22,17 +22,16 @@ html, body {
 }
 
 .droplet {
-  width: 20px;
-  height: 20px;
+  width: 8px;
+  height: 8px;
   position: absolute;
   border-radius: 100%;
-  transform: translate(-10px, -10px);
-  background: #44f;
-  background: radial-gradient(ellipse at center,
-    #fff 0%,
-    rgba(83, 203, 241, 1) 15%,
-    rgba(83, 203, 241, 0.5) 50%,
-    rgba(83, 203, 241, 0) 100%);
+  transform: translate(-50%, -50%);
+  background: #610;
+  box-shadow:
+    0 -2px 1px 1px orange,
+    0 -5px 2px 0px yellow;
+    0 -9px 3px 0px white;
 }
 
 .catcher-line {

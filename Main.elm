@@ -101,7 +101,7 @@ updateAnimFrame : Time.Time -> Model -> Model
 updateAnimFrame time model =
     model
         |> updateTsld time
-        --|> addDroplets time
+        |> addDroplets time
         |> clearDroplets
         |> moveCatcher time
         |> catchDroplets

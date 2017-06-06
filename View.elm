@@ -124,8 +124,9 @@ viewDroplet droplet =
     div
         [ class "droplet"
         , style
-            [ ( "top", px pos.y )
-            , ( "left", px pos.x )
+            [ ( "transform"
+              , "translate(" ++ px pos.x ++ "," ++ px pos.y ++ ")"
+              )
             ]
         ]
         []
