@@ -30,8 +30,9 @@ html, body {
   background: #610;
   box-shadow:
     0 -2px 1px 1px orange,
-    0 -5px 2px 0px yellow;
+    0 -5px 2px 0px yellow,
     0 -9px 3px 0px white;
+    0 -15px 2px 0px rgba(255, 255, 255, 0.9);
 }
 
 .catcher-line {
