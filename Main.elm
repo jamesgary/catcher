@@ -34,6 +34,7 @@ init =
             , lastPos = defaultPos
             }
       , mousePos = defaultPos
+      , effects = []
       }
     , Cmd.none
     )
@@ -101,6 +102,7 @@ updateAnimFrame : Time.Time -> Model -> Model
 updateAnimFrame time model =
     model
         |> updateTsld time
+        |> ageEffects time
         |> addDroplets time
         |> clearDroplets
         |> moveCatcher time
@@ -108,11 +110,41 @@ updateAnimFrame time model =
         |> animDroplets time
 
 
+ageEffects : Time.Time -> Model -> Model
+ageEffects time model =
+    { model | effects = List.filterMap (ageEffect time) model.effects }
+
+
+ageEffect : Time.Time -> Effect -> Maybe Effect
+ageEffect time effect =
+    let
+        newAge =
+            effect.age + time
+    in
+    if newAge > config.maxEffectAge then
+        Nothing
+    else
+        Just { effect | age = newAge }
+
+
 catchDroplets : Model -> Model
 catchDroplets model =
+    let
+        ( hitDrops, missedDrops ) =
+            List.partition (isTouchingCatcher model.catcher) model.droplets
+
+        effects =
+            List.map effectFromDroplet hitDrops
+    in
     { model
-        | droplets = List.filter (not << isTouchingCatcher model.catcher) model.droplets
+        | droplets = missedDrops
+        , effects = model.effects ++ effects
     }
+
+
+effectFromDroplet : Droplet -> Effect
+effectFromDroplet droplet =
+    Effect droplet.pos 0
 
 
 isTouchingCatcher : Catcher -> Droplet -> Bool

@@ -24,15 +24,21 @@ html, body {
 .droplet {
   width: 8px;
   height: 8px;
+  top: -4px;
+  left: -4px;
   position: absolute;
   border-radius: 100%;
-  transform: translate(-50%, -50%);
   background: #610;
   box-shadow:
     0 -2px 1px 1px orange,
     0 -5px 2px 0px yellow,
     0 -9px 3px 0px white;
-    0 -15px 2px 0px rgba(255, 255, 255, 0.9);
+}
+
+.effect {
+  position: absolute;
+  border-radius: 100%;
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .catcher-line {

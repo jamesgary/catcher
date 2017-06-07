@@ -27,6 +27,7 @@ view model =
             [ viewFilters
             , viewCatcher model.catcher
             ]
+        , viewEffects model.effects
         , viewDroplets model.droplets
         , viewGlass
         ]
@@ -127,6 +128,38 @@ viewDroplet droplet =
             [ ( "transform"
               , "translate(" ++ px pos.x ++ "," ++ px pos.y ++ ")"
               )
+            ]
+        ]
+        []
+
+
+viewEffects : List Effect -> Html Msg
+viewEffects effects =
+    div [ class "effects" ] (List.map viewEffect effects)
+
+
+viewEffect : Effect -> Html Msg
+viewEffect effect =
+    let
+        diameter =
+            5 * (effect.age ^ 0.4)
+
+        x =
+            effect.pos.x - (diameter / 2)
+
+        y =
+            effect.pos.y - (diameter / 2)
+
+        opacity =
+            1 - (effect.age / config.maxEffectAge)
+    in
+    div
+        [ class "effect"
+        , style
+            [ ( "transform", "translate(" ++ px x ++ "," ++ px y ++ ")" )
+            , ( "width", px diameter )
+            , ( "height", px diameter )
+            , ( "opacity", toString opacity )
             ]
         ]
         []

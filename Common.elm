@@ -10,6 +10,7 @@ config =
     , dropCooldown = 100
     , catcherWidth = 100
     , catcherSpeed = 5
+    , maxEffectAge = 1000
     }
 
 
@@ -20,6 +21,7 @@ type alias Model =
     , randomSeed : Random.Seed
     , catcher : Catcher
     , mousePos : Pos
+    , effects : List Effect
     }
 
 
@@ -44,6 +46,12 @@ type alias Pos =
 
 type alias Line =
     ( Pos, Pos )
+
+
+type alias Effect =
+    { pos : Pos
+    , age : Time.Time
+    }
 
 
 type Msg
