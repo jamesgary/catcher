@@ -1,5 +1,7 @@
 # Catching Game
 
+Playable at https://ellie-app.com/6Z4kDNRQya1/1
+
 ## An Elm game about... catching?
 
 ```sh
